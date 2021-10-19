@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Калькулятор калорий</string>
+    <string-array name="activityLevel">
+        <item>Низкий уровень активности</item>
+        <item>Средний уровень активности</item>
+        <item>Высокий уровень активности</item>
+    </string-array>
+</resources>

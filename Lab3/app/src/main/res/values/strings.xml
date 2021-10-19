@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Создание контакта</string>
+    <string-array name="groups">
+        <item>Семья</item>
+        <item>Друзья</item>
+        <item>Учеба</item>
+        <item>Работа</item>
+    </string-array>
+</resources>
