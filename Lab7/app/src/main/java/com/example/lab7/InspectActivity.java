@@ -14,9 +14,9 @@ import java.util.List;
 
 public class InspectActivity extends AppCompatActivity {
 
-    TextView textViewName, textViewDescription, textViewPriority, textViewDifficulty, textViewDuration;
-    ImageView imageViewAvatar;
-    Task selectedTask;
+    private TextView textViewName, textViewDescription, textViewPriority, textViewDifficulty, textViewDuration;
+    private ImageView imageViewAvatar;
+    private Task selectedTask;
 
     private void initializeWidgets() {
         textViewName = (TextView) findViewById(R.id.textViewName);

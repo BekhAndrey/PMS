@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -14,16 +15,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.lab7.data.DBContract;
+import com.example.lab7.data.DBHelper;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TaskListFragment.TaskListListener {
 
-    CustomAdapter adapter;
-    List<Task> taskList;
-    ListView listView;
-    TaskListFragment taskListFragment;
+    private CustomAdapter adapter;
+    private List<Task> taskList;
+    private ListView listView;
+    private TaskListFragment taskListFragment;
+    private DBHelper mDbHelper;
+    private SQLiteDatabase db;
 
     public static final int IDM_OPEN = 101;
     public static final int IDM_EDIT = 102;
@@ -54,23 +60,12 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        taskList = JSONHelper.importFromJSON(this);
-        if (taskList == null) {
-            taskList = new ArrayList<Task>();
-            taskList.add(new Task("First", "This is a long long long long long long long long description",
-                    "easy", "Medium", "1", "/storage/emulated/0/Download/1.jpg"));
-            taskList.add(new Task("Second", "This is a short description",
-                    "medium", "High", "5", "/storage/emulated/0/Download/1.jpg"));
-            taskList.add(new Task("Third", "This is a medium medium medium description",
-                    "hard", "Low", "7", "/storage/emulated/0/Pictures/IMG_20210929_052107.jpg"));
-            taskList.add(new Task("Fourth", "This is the long long long long long long long long description",
-                    "easy", "Low", "7", "/storage/emulated/0/Pictures/IMG_20210929_052107.jpg"));
-            taskList.add(new Task("Fifth", "This is a long long long long long long long long description",
-                    "easy", "High", "7", "/storage/emulated/0/Pictures/IMG_20210929_052107.jpg"));
-            JSONHelper.exportToJSON(this, taskList);
-        }
         taskListFragment = (TaskListFragment) getSupportFragmentManager().findFragmentById(R.id.list_frag);
         registerForContextMenu(taskListFragment.getListView());
+        mDbHelper = new DBHelper(this);
+        db = mDbHelper.getWritableDatabase();
+        taskList = Helper.getTaskList(this);
+
     }
 
     @Override
@@ -106,8 +101,8 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                         // The dialog is automatically dismissed when a dialog button is clicked.
                         .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                db.delete(DBContract.DBEntry.TABLE_NAME, DBContract.DBEntry._ID + "=" + taskList.get(info.position).getId(),null);
                                 taskList.remove(info.position);
-                                JSONHelper.exportToJSON(MainActivity.this,taskList);
                                 adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
                                 taskListFragment.setListAdapter(adapter);
                                 adapter.notifyDataSetChanged();
@@ -140,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                 taskList.sort(Comparator.comparing(task->task.getName()));
                 adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
                 taskListFragment.setListAdapter(adapter);
-                JSONHelper.exportToJSON(this, taskList);
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.action_sort_by_priority:
@@ -148,20 +142,20 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                 taskList.sort(comparator);
                 adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
                 taskListFragment.setListAdapter(adapter);
-                JSONHelper.exportToJSON(this, taskList);
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.action_get_finished:
-                Long unfinishedAmount = taskList.stream().filter(x->x.getStatus().equals("Unfinished")).count();
-                Long finishedAmount = new Long(taskList.size()-unfinishedAmount);
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Информация по задачам")
-                        .setMessage("Всего задач: " + taskList.size()
-                                +";\nКоличество выполненных задач: " + finishedAmount
-                                + ";\nКоличество невыполненных задача: " + unfinishedAmount)
-                        .setPositiveButton("Ок", null)
-                        .show();
-
+                taskList = Helper.getFinished(this);
+                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                taskListFragment.setListAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                return true;
+            case R.id.action_refresh:
+                taskList = Helper.getTaskList(this);
+                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                taskListFragment.setListAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

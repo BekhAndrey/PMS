@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.lab7.Task;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,9 +21,9 @@ import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<Task> {
 
-    List<Task> taskList;
-    Context context;
-    int resource;
+    private List<Task> taskList;
+    private Context context;
+    private int resource;
 
     public CustomAdapter(Context context, int resource, List<Task> taskList) {
         super(context, resource, taskList);

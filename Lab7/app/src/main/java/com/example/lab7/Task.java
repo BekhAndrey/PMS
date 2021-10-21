@@ -6,30 +6,21 @@ import java.util.Random;
 public class Task implements Serializable {
 
     private Integer id;
+
     private String name;
     private String description;
     private String difficulty;
     private String priority;
     private String duration;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     private String status;
+
     private String imagePath = "/storage/emulated/0/Pictures/IMG_20210929_052107.jpg";
 
     public Task(){
-        this.id =  new Random().nextInt(10000);
         this.status = "Unfinished";
     }
     public Task(String name, String description, String difficulty, String priority, String duration, String imagePath) {
         this.status = "Unfinished";
-        this.id =  new Random().nextInt(10000);
         this.name = name;
         this.description = description;
         this.difficulty = difficulty;
@@ -40,6 +31,18 @@ public class Task implements Serializable {
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getImagePath() {

@@ -19,8 +19,8 @@ import java.util.List;
 
 public class TaskDetailFragment extends Fragment {
 
-    Task selectedTask;
-    List<Task> taskList;
+    private Task selectedTask;
+    private List<Task> taskList;
     private int taskPosition;
 
     public void setTask(int position) {
@@ -30,7 +30,7 @@ public class TaskDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        taskList = JSONHelper.importFromJSON(getContext());
+        taskList = Helper.getTaskList(getContext());
     }
 
     @Override

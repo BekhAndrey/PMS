@@ -7,8 +7,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +22,8 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.example.lab7.data.DBContract;
+import com.example.lab7.data.DBHelper;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
@@ -28,14 +33,13 @@ import java.util.List;
 
 public class EditActivity extends AppCompatActivity {
 
-    ImageView imageViewAvatar;
-    CheckBox checkBoxFinished;
-    Task selectedTask;
-    Task editedTask = new Task();
-    TextInputLayout textInputLayoutName, textInputLayoutDuration, textInputLayoutDescription;
-    Spinner spinnerPriority, spinnerDifficulty;
-    Button buttonEdit;
-    List<Task> taskList;
+    private ImageView imageViewAvatar;
+    private CheckBox checkBoxFinished;
+    private TextInputLayout textInputLayoutName, textInputLayoutDuration, textInputLayoutDescription;
+    private Spinner spinnerPriority, spinnerDifficulty;
+    private Button buttonEdit;
+    private DBHelper mDbHelper;
+    private SQLiteDatabase db;
 
     private void initializeWidgets() {
         textInputLayoutName = (TextInputLayout) findViewById(R.id.textInputLayoutName);
@@ -55,24 +59,28 @@ public class EditActivity extends AppCompatActivity {
         initializeWidgets();
         Bundle arguments = getIntent().getExtras();
         int id = arguments.getInt("id");
-        taskList = JSONHelper.importFromJSON(getBaseContext());
-        selectedTask = taskList.stream().filter(x->x.getId().equals(id)).findFirst().orElse(null);
-        if(selectedTask.getStatus().equals("Finished")){
-            checkBoxFinished.setSelected(true);
+        mDbHelper = new DBHelper(this);
+        db = mDbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME +
+                " WHERE " + DBContract.DBEntry._ID + "=" + id,null);
+        cursor.moveToFirst();
+        if(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_STATUS)).equals("Finished")){
+            checkBoxFinished.setChecked(true);
         }
-        textInputLayoutName.getEditText().setText(selectedTask.getName());
-        textInputLayoutDuration.getEditText().setText(selectedTask.getDuration());
-        textInputLayoutDescription.getEditText().setText(selectedTask.getDescription());
-        spinnerPriority.setSelection(((ArrayAdapter)spinnerPriority.getAdapter()).getPosition(selectedTask.getPriority()));
-        spinnerDifficulty.setSelection(((ArrayAdapter)spinnerDifficulty.getAdapter()).getPosition(selectedTask.getDifficulty()));
+        textInputLayoutName.getEditText().setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_NAME)));
+        textInputLayoutDuration.getEditText().setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DURATION)));
+        textInputLayoutDescription.getEditText().setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION)));
+        spinnerPriority.setSelection(((ArrayAdapter)spinnerPriority.getAdapter()).getPosition(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_PRIORITY))));
+        spinnerDifficulty.setSelection(((ArrayAdapter)spinnerDifficulty.getAdapter()).getPosition(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY))));
         try {
-            File file=new File(selectedTask.getImagePath());
+            File file=new File(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH)));
             imageViewAvatar.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(file)));
         }
         catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
+        ContentValues values = new ContentValues();
         buttonEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,17 +89,17 @@ public class EditActivity extends AppCompatActivity {
                         .setMessage("Вы уверены, что хотите сохранить изменения?")
                         .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                editedTask.setName(textInputLayoutName.getEditText().getText().toString());
-                                editedTask.setDescription(textInputLayoutDescription.getEditText().getText().toString());
-                                editedTask.setDuration(textInputLayoutDuration.getEditText().getText().toString());
-                                editedTask.setPriority(spinnerPriority.getSelectedItem().toString());
-                                editedTask.setDifficulty(spinnerDifficulty.getSelectedItem().toString());
+                                values.put(DBContract.DBEntry.COLUMN_NAME_NAME, textInputLayoutName.getEditText().getText().toString());
+                                values.put(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION, textInputLayoutDescription.getEditText().getText().toString());
+                                values.put(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY, spinnerDifficulty.getSelectedItem().toString());
+                                values.put(DBContract.DBEntry.COLUMN_NAME_PRIORITY, spinnerPriority.getSelectedItem().toString());
+                                values.put(DBContract.DBEntry.COLUMN_NAME_DURATION, textInputLayoutDuration.getEditText().getText().toString());
                                 if(checkBoxFinished.isChecked()){
-                                    editedTask.setStatus("Finished");
+                                    values.put(DBContract.DBEntry.COLUMN_NAME_STATUS, "Finished");
                                 }
-                                taskList.remove(selectedTask);
-                                taskList.add(editedTask);
-                                JSONHelper.exportToJSON(EditActivity.this,taskList);
+
+                                db.update(DBContract.DBEntry.TABLE_NAME, values, DBContract.DBEntry._ID + "=" + id, null);
+                                db.close();
                                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
@@ -108,7 +116,7 @@ public class EditActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == RESULT_OK && null != result.getData()) {
                             Uri selectedImage = result.getData().getData();
-                            editedTask.setImagePath(Helper.getRealPathFromURI(getBaseContext(),selectedImage));
+                            values.put(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH, Helper.getRealPathFromURI(getBaseContext(),selectedImage));
                             imageViewAvatar.setImageURI(selectedImage);
                         }
                     }

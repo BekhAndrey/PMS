@@ -20,4 +20,10 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_action_get_finished"
         android:title="Посчитать завершенные задачи"/>
+    <item
+        android:id="@+id/action_refresh"
+        android:orderInCategory="4"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="Посчитать завершенные задачи"/>
 </menu>

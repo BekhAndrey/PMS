@@ -6,7 +6,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -14,17 +16,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.example.lab7.data.DBContract;
+import com.example.lab7.data.DBHelper;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.util.List;
 
 public class CreateActivity extends AppCompatActivity {
 
-    ImageView imageViewAvatar;
-    TextInputLayout textInputLayoutName, textInputLayoutDuration, textInputLayoutDescription;
-    Spinner spinnerPriority, spinnerDifficulty;
-    Button buttonCreate;
-    List<Task> taskList;
+    private ImageView imageViewAvatar;
+    private TextInputLayout textInputLayoutName, textInputLayoutDuration, textInputLayoutDescription;
+    private Spinner spinnerPriority, spinnerDifficulty;
+    private Button buttonCreate;
+    private DBHelper mDbHelper;
 
     private void initializeWidgets() {
         textInputLayoutName = (TextInputLayout) findViewById(R.id.textInputLayoutName);
@@ -41,8 +43,8 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
         initializeWidgets();
-        Task newTask = new Task();
-        taskList = JSONHelper.importFromJSON(getBaseContext());
+        mDbHelper = new DBHelper(this);
+        ContentValues values = new ContentValues();
         ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -50,7 +52,7 @@ public class CreateActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == RESULT_OK && null != result.getData()) {
                             Uri selectedImage = result.getData().getData();
-                            newTask.setImagePath(Helper.getRealPathFromURI(getBaseContext(),selectedImage));
+                            values.put(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH, Helper.getRealPathFromURI(getBaseContext(),selectedImage));
                             imageViewAvatar.setImageURI(selectedImage);
                         }
                     }
@@ -66,13 +68,19 @@ public class CreateActivity extends AppCompatActivity {
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newTask.setName(textInputLayoutName.getEditText().getText().toString());
-                newTask.setDescription(textInputLayoutDescription.getEditText().getText().toString());
-                newTask.setDifficulty(spinnerDifficulty.getSelectedItem().toString());
-                newTask.setPriority(spinnerPriority.getSelectedItem().toString());
-                newTask.setDuration(textInputLayoutDuration.getEditText().getText().toString());
-                taskList.add(newTask);
-                JSONHelper.exportToJSON(getBaseContext(),taskList);
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                values.put(DBContract.DBEntry.COLUMN_NAME_NAME, textInputLayoutName.getEditText().getText().toString());
+                values.put(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION, textInputLayoutDescription.getEditText().getText().toString());
+                values.put(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY, spinnerDifficulty.getSelectedItem().toString());
+                values.put(DBContract.DBEntry.COLUMN_NAME_PRIORITY, spinnerPriority.getSelectedItem().toString());
+                values.put(DBContract.DBEntry.COLUMN_NAME_DURATION, textInputLayoutDuration.getEditText().getText().toString());
+                values.put(DBContract.DBEntry.COLUMN_NAME_STATUS, "Unfinished");
+                long newRowId;
+                newRowId = db.insert(
+                        DBContract.DBEntry.TABLE_NAME,
+                        null,
+                        values);
+                db.close();
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
