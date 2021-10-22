@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -26,10 +27,10 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
 
     private CustomAdapter adapter;
     private List<Task> taskList;
-    private ListView listView;
     private TaskListFragment taskListFragment;
     private DBHelper mDbHelper;
     private SQLiteDatabase db;
+    private Cursor cursor;
 
     public static final int IDM_OPEN = 101;
     public static final int IDM_EDIT = 102;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
             ftr.commit();
         }
         else{
-            Task selectedTask = taskList.get(position);
+            Task selectedTask = Helper.getTaskByPosition(this,position);
             Intent intent = new Intent(this, InspectActivity.class);
             intent.putExtra(Task.class.getSimpleName(), selectedTask);
             startActivity(intent);
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         registerForContextMenu(taskListFragment.getListView());
         mDbHelper = new DBHelper(this);
         db = mDbHelper.getWritableDatabase();
+        cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
         taskList = Helper.getTaskList(this);
 
     }
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Task selectedTask = taskList.get(info.position);
+        Task selectedTask = Helper.getTaskByPosition(this, info.position);
         switch (item.getItemId()) {
             case IDM_OPEN:
                 Intent inspectIntent = new Intent(getBaseContext(), InspectActivity.class);
@@ -102,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                         .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 db.delete(DBContract.DBEntry.TABLE_NAME, DBContract.DBEntry._ID + "=" + taskList.get(info.position).getId(),null);
-                                taskList.remove(info.position);
-                                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
+                                adapter = new CustomAdapter(taskListFragment.getContext(), cursor, 0);
                                 taskListFragment.setListAdapter(adapter);
                                 adapter.notifyDataSetChanged();
                             }
@@ -132,31 +134,41 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                 startActivity(intent);
                 return true;
             case R.id.action_sort_by_name:
-                taskList.sort(Comparator.comparing(task->task.getName()));
-                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " ORDER BY " + DBContract.DBEntry.COLUMN_NAME_NAME , null);
+                adapter = new CustomAdapter(taskListFragment.getContext(), cursor, 0);
                 taskListFragment.setListAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.action_sort_by_priority:
-                Comparator comparator = new PriorityComparator();
-                taskList.sort(comparator);
-                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME
+                        + " ORDER BY CASE WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='High' THEN 0 "
+                        + "WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='Medium' THEN 1 "
+                        + "WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='Low' THEN 2 "
+                        + "ELSE 3 END ASC", null);
+                adapter = new CustomAdapter(taskListFragment.getContext(), cursor, 0);
                 taskListFragment.setListAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.action_get_finished:
-                taskList = Helper.getFinished(this);
-                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " WHERE " + DBContract.DBEntry.COLUMN_NAME_STATUS + "=" + "'Finished'", null);
+                adapter = new CustomAdapter(taskListFragment.getContext(), cursor, 0);
                 taskListFragment.setListAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.action_refresh:
-                taskList = Helper.getTaskList(this);
-                adapter = new CustomAdapter(taskListFragment.getContext(), R.layout.custom_listview, taskList);
+                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
+                adapter = new CustomAdapter(taskListFragment.getContext(), cursor, 0);
                 taskListFragment.setListAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cursor.close();
+        db.close();
     }
 }

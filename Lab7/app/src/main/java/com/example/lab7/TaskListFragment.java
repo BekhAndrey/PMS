@@ -48,20 +48,7 @@ public class TaskListFragment extends ListFragment {
         DBHelper helper = new DBHelper(inflater.getContext());
         SQLiteDatabase db = helper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
-            Task task = new Task();
-            task.setName(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_NAME)));
-            task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION)));
-            task.setDifficulty(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY)));
-            task.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DURATION)));
-            task.setPriority(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_PRIORITY)));
-            task.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH)));
-            task.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_STATUS)));
-            taskList.add(task); //add the item
-            cursor.moveToNext();
-        }
-        adapter = new CustomAdapter(inflater.getContext(), R.layout.custom_listview, taskList);
+        adapter = new CustomAdapter(inflater.getContext(), cursor , 0);
         setListAdapter(adapter);
         return super.onCreateView(inflater, container, savedInstanceState);
 

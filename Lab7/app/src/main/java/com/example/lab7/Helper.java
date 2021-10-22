@@ -73,4 +73,23 @@ public class Helper {
         db.close();
         return taskList;
     }
+
+    public static Task getTaskByPosition(Context context, int position){
+        Task task = new Task();
+        DBHelper helper = new DBHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
+        cursor.moveToPosition(position);
+        task.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DBContract.DBEntry._ID)));
+        task.setName(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_NAME)));
+        task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION)));
+        task.setDifficulty(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY)));
+        task.setPriority(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_PRIORITY)));
+        task.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DURATION)));
+        task.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_STATUS)));
+        task.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH)));
+        cursor.close();
+        db.close();
+        return task;
+    }
 }

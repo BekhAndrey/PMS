@@ -1,5 +1,7 @@
 package com.example.lab7;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
@@ -11,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.lab7.data.DBContract;
+import com.example.lab7.data.DBHelper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,8 +24,6 @@ import java.util.List;
 
 public class TaskDetailFragment extends Fragment {
 
-    private Task selectedTask;
-    private List<Task> taskList;
     private int taskPosition;
 
     public void setTask(int position) {
@@ -30,7 +33,6 @@ public class TaskDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        taskList = Helper.getTaskList(getContext());
     }
 
     @Override
@@ -38,17 +40,22 @@ public class TaskDetailFragment extends Fragment {
         super.onStart();
         View view = getView();
         if (view != null) {
-            selectedTask = taskList.get(taskPosition);
+            DBHelper helper = new DBHelper(this.getContext());
+            SQLiteDatabase db = helper.getWritableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
+            cursor.moveToPosition(taskPosition);
             TextView textViewName = (TextView)view.findViewById(R.id.textViewName);
             TextView textViewDescription = (TextView)view.findViewById(R.id.textViewDescription);
             TextView textViewDuration = (TextView)view.findViewById(R.id.textViewDuration);
             TextView textViewDifficulty = (TextView)view.findViewById(R.id.textViewDifficulty);
             TextView textViewPriority = (TextView)view.findViewById(R.id.textViewPriority);
-            textViewName.setText(selectedTask.getName());
-            textViewDescription.setText(selectedTask.getDescription());
-            textViewDuration.setText(selectedTask.getDuration());
-            textViewDifficulty.setText(selectedTask.getDifficulty());
-            textViewPriority.setText(selectedTask.getPriority());
+            textViewName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_NAME)));
+            textViewDescription.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION)));
+            textViewDuration.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DURATION)));
+            textViewDifficulty.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY)));
+            textViewPriority.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_PRIORITY)));
+            cursor.close();
+            db.close();
         }
     }
 
