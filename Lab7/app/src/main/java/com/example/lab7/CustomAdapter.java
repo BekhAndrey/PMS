@@ -32,52 +32,6 @@ public class CustomAdapter extends CursorAdapter {
         cursorInflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
     }
-//    public CustomAdapter(Context context, int resource, List<Task> taskList) {
-//        super(context, resource, taskList);
-//        this.taskList = taskList;
-//        this .context = context;
-//        this.resource = resource;
-//    }
-//
-//
-//    //this will return the ListView Item as a View
-//    @NonNull
-//    @Override
-//    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//
-//        //we need to get the view of the xml for our list item
-//        //And for this we need a layoutinflater
-//        LayoutInflater layoutInflater = LayoutInflater.from(context);
-//
-//        //getting the view
-//        View view = layoutInflater.inflate(resource, null, false);
-//
-//        ImageView imageView = view.findViewById(R.id.image);
-//        TextView textViewName = view.findViewById(R.id.name);
-//        TextView textViewDescription = view.findViewById(R.id.description);
-//        TextView textViewDifficulty = view.findViewById(R.id.difficulty);
-//        TextView textViewPriority = view.findViewById(R.id.priority);
-//        TextView textViewDuration = view.findViewById(R.id.duration);
-//        ImageView imageViewAvatar = view.findViewById(R.id.image);
-//        Task task = taskList.get(position);
-//
-//        textViewName.setText(task.getName());
-//        textViewDescription.setText(task.getDescription());
-//        textViewDifficulty.setText("Difficulty: " + task.getDifficulty());
-//        textViewPriority.setText("Priority: " +task.getPriority());
-//        textViewDuration.setText("Duration: " +task.getDuration() + " days");
-//        try {
-//            File file=new File(task.getImagePath());
-//            imageViewAvatar.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(file)));
-//        }
-//        catch (FileNotFoundException e)
-//        {
-//            e.printStackTrace();
-//        }
-//
-//        //finally returning the view
-//        return view;
-//    }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
