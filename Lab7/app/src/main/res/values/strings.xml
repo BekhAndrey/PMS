@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lab7</string>
+    <string name="app_name">Lab7-8</string>
     <string-array name="priorities">
         <item>Low</item>
         <item>Medium</item>

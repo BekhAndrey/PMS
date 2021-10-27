@@ -51,6 +51,25 @@ public class Helper {
         return taskList;
     }
 
+    public static List<Task> getTaskListFromCursor(Context context, Cursor cursor){
+        List<Task> taskList = new ArrayList<>();
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            Task task = new Task();
+            task.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DBContract.DBEntry._ID)));
+            task.setName(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_NAME)));
+            task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION)));
+            task.setDifficulty(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY)));
+            task.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DURATION)));
+            task.setPriority(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_PRIORITY)));
+            task.setImagePath(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH)));
+            task.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_STATUS)));
+            taskList.add(task); //add the item
+            cursor.moveToNext();
+        }
+        return taskList;
+    }
+
     public static List<Task> getFinished(Context context){
         List<Task> taskList = new ArrayList<>();
         DBHelper helper = new DBHelper(context);

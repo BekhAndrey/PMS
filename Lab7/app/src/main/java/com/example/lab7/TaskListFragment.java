@@ -45,11 +45,11 @@ public class TaskListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        DBHelper helper = new DBHelper(inflater.getContext());
-        SQLiteDatabase db = helper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
-        adapter = new CustomAdapter(inflater.getContext(), cursor , 0);
-        setListAdapter(adapter);
+//        DBHelper helper = new DBHelper(inflater.getContext());
+//        SQLiteDatabase db = helper.getWritableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
+//        adapter = new CustomAdapter(inflater.getContext(), cursor , 0);
+//        setListAdapter(adapter);
         return super.onCreateView(inflater, container, savedInstanceState);
 
     }
