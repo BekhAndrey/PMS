@@ -3,14 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/PMS/Lab7/app/src/main/res/drawable-anydpi/menuIcon.xml" value="0.2703125" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout-land/activity_inspect.xml" value="0.20572916666666666" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout-land/activity_main.xml" value="0.20572916666666666" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout-land/fragment_task_detail.xml" value="0.20572916666666666" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout/activity_create.xml" value="0.17889492753623187" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout/activity_edit.xml" value="0.17889492753623187" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout/activity_inspect.xml" value="0.17889492753623187" />
-        <entry key="..\:/PMS/Lab7/app/src/main/res/layout/activity_main.xml" value="0.17889492753623187" />
-        <entry key="..\:/PMS/Lab7/app/src/main/res/layout/custom_listview.xml" value="0.17889492753623187" />
+        <entry key="..\:/PMS/Lab7/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/PMS/Lab7/app/src/main/res/layout/custom_listview.xml" value="0.536" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/layout/fragment_task_detail.xml" value="0.13020833333333334" />
         <entry key="..\:/PMS/Lab7/app/src/main/res/menu/main_menu.xml" value="0.25416666666666665" />
       </map>

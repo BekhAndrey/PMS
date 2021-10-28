@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/cardView"
     android:layout_width="match_parent"
-    android:layout_height="170dp">
+    android:layout_height="160dp"
+    android:layout_margin="5dp"
+    android:theme="@style/Theme.MaterialComponents"
+    app:cardCornerRadius="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:padding="15dp"
+        android:theme="@style/Theme.MaterialComponents">
 
         <TextView
             android:id="@+id/name"
@@ -17,7 +22,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="5dp"
             android:layout_toEndOf="@id/cardView"
             android:paddingLeft="10dp"
             android:paddingBottom="10dp"
@@ -31,7 +35,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="2dp"
             app:cardCornerRadius="100dp">
 
             <ImageView
@@ -92,4 +96,4 @@
 
 
     </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

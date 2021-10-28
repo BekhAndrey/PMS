@@ -7,23 +7,23 @@
         android:icon="@drawable/ic_action_add"
         android:title="Добавить задачу" />
     <item
-        android:id="@+id/action_sort_by_name"
-        android:orderInCategory="1"
-        android:title="Отсортировать по названию" />
-    <item
-        android:id="@+id/action_sort_by_priority"
-        android:orderInCategory="2"
-        android:title="Отсортировать по приоритету" />
-    <item
         android:id="@+id/action_get_finished"
-        android:orderInCategory="3"
         app:showAsAction="always"
         android:icon="@drawable/ic_action_get_finished"
         android:title="Посчитать завершенные задачи"/>
     <item
         android:id="@+id/action_refresh"
-        android:orderInCategory="4"
         app:showAsAction="always"
         android:icon="@drawable/ic_action_refresh"
         android:title="Посчитать завершенные задачи"/>
+    <item android:title="Сортировка">
+        <menu>
+            <item
+                android:id="@+id/action_sort_by_name"
+                android:title="Отсортировать по названию" />
+            <item
+                android:id="@+id/action_sort_by_priority"
+                android:title="Отсортировать по приоритету" />
+        </menu>
+    </item>
 </menu>
