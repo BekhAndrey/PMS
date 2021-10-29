@@ -95,44 +95,5 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             menu.add(this.getAdapterPosition(), IDM_DELETE, Menu.NONE, "Удалить");
         }
     }
-//    private LayoutInflater cursorInflater;
-//
-//    private List<Task> taskList;
-//
-//    public CustomAdapter(Context context, Cursor c, int flags) {
-//        super(context, c, flags);
-//        cursorInflater = (LayoutInflater) context.getSystemService(
-//                Context.LAYOUT_INFLATER_SERVICE);
-//    }
-//
-//    @Override
-//    public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-//        return cursorInflater.inflate(R.layout.custom_listview, viewGroup, false);
-//    }
-//
-//    @Override
-//    public void bindView(View view, Context context, Cursor cursor) {
-//        ImageView imageView = view.findViewById(R.id.image);
-//        TextView textViewName = view.findViewById(R.id.name);
-//        TextView textViewDescription = view.findViewById(R.id.description);
-//        TextView textViewDifficulty = view.findViewById(R.id.difficulty);
-//        TextView textViewPriority = view.findViewById(R.id.priority);
-//        TextView textViewDuration = view.findViewById(R.id.duration);
-//        ImageView imageViewAvatar = view.findViewById(R.id.image);
-//
-//        textViewName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_NAME)));
-//        textViewDescription.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DESCRIPTION)));
-//        textViewDifficulty.setText("Difficulty: " + cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DIFFICULTY)));
-//        textViewPriority.setText("Priority: " +cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_PRIORITY)));
-//        textViewDuration.setText("Duration: " +cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_DURATION)) + " days");
-//        try {
-//            File file=new File(cursor.getString(cursor.getColumnIndexOrThrow(DBContract.DBEntry.COLUMN_NAME_IMAGE_PATH)));
-//            imageViewAvatar.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(file)));
-//        }
-//        catch (FileNotFoundException e)
-//        {
-//            e.printStackTrace();
-//        }
-//    }
 
 }

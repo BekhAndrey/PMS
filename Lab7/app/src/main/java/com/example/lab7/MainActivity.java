@@ -7,10 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -72,8 +75,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 })
         );
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+        } else {
+            GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+            recyclerView.setLayoutManager(layoutManager);
+        }
         adapter = new CustomAdapter(this, taskList);
         recyclerView.setAdapter(adapter);
+
 
     }
 
@@ -116,26 +128,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main_menu, menu);
-//        return true;
-//    }
-//
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         switch (item.getItemId()) {
-            case R.id.action_add :
+            case R.id.action_add:
                 Intent intent = new Intent(getBaseContext(), CreateActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.action_sort_by_name:
-                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " ORDER BY " + DBContract.DBEntry.COLUMN_NAME_NAME , null);
-                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
+                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " ORDER BY " + DBContract.DBEntry.COLUMN_NAME_NAME, null);
+                taskList = Helper.getTaskListFromCursor(getBaseContext(), cursor);
                 adapter = new CustomAdapter(getBaseContext(), taskList);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -147,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         + "WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='Medium' THEN 1 "
                         + "WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='Low' THEN 2 "
                         + "ELSE 3 END ASC", null);
-                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
+                taskList = Helper.getTaskListFromCursor(getBaseContext(), cursor);
                 adapter = new CustomAdapter(getBaseContext(), taskList);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -155,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.action_get_finished:
                 cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " WHERE " + DBContract.DBEntry.COLUMN_NAME_STATUS + "=" + "'Finished'", null);
-                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
+                taskList = Helper.getTaskListFromCursor(getBaseContext(), cursor);
                 adapter = new CustomAdapter(getBaseContext(), taskList);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -163,59 +169,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.action_refresh:
                 cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
-                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
+                taskList = Helper.getTaskListFromCursor(getBaseContext(), cursor);
                 adapter = new CustomAdapter(getBaseContext(), taskList);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
+            case R.id.action_set_linear_layout:
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_set_grid_layout:
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+                recyclerView.setLayoutManager(gridLayoutManager);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
         }
         return true;
     }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        switch(id){
-//            case R.id.action_add :
-//                Intent intent = new Intent(getBaseContext(), CreateActivity.class);
-//                startActivity(intent);
-//                return true;
-//            case R.id.action_sort_by_name:
-//                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " ORDER BY " + DBContract.DBEntry.COLUMN_NAME_NAME , null);
-//                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
-//                adapter = new CustomAdapter(getBaseContext(), taskList);
-//                recyclerView.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//                return true;
-//            case R.id.action_sort_by_priority:
-//                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME
-//                        + " ORDER BY CASE WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='High' THEN 0 "
-//                        + "WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='Medium' THEN 1 "
-//                        + "WHEN " + DBContract.DBEntry.COLUMN_NAME_PRIORITY + "='Low' THEN 2 "
-//                        + "ELSE 3 END ASC", null);
-//                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
-//                adapter = new CustomAdapter(getBaseContext(), taskList);
-//                recyclerView.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//                return true;
-//            case R.id.action_get_finished:
-//                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME + " WHERE " + DBContract.DBEntry.COLUMN_NAME_STATUS + "=" + "'Finished'", null);
-//                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
-//                adapter = new CustomAdapter(getBaseContext(), taskList);
-//                recyclerView.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//                return true;
-//            case R.id.action_refresh:
-//                cursor = db.rawQuery("SELECT * FROM " + DBContract.DBEntry.TABLE_NAME, null);
-//                taskList = Helper.getTaskListFromCursor(getBaseContext(),cursor);
-//                adapter = new CustomAdapter(getBaseContext(), taskList);
-//                recyclerView.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     protected void onDestroy() {

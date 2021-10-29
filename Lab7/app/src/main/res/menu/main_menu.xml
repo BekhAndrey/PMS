@@ -3,19 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add"
-        app:showAsAction="always"
         android:icon="@drawable/ic_action_add"
-        android:title="Добавить задачу" />
+        android:title="Добавить задачу"
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_get_finished"
-        app:showAsAction="always"
         android:icon="@drawable/ic_action_get_finished"
-        android:title="Посчитать завершенные задачи"/>
+        android:title="Посчитать завершенные задачи"
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_refresh"
-        app:showAsAction="always"
         android:icon="@drawable/ic_action_refresh"
-        android:title="Посчитать завершенные задачи"/>
+        android:title="Посчитать завершенные задачи"
+        app:showAsAction="always" />
+    <item android:title="Способ отображения">
+        <menu>
+            <item
+                android:id="@+id/action_set_linear_layout"
+                android:title="В виде списка"/>
+            <item
+                android:id="@+id/action_set_grid_layout"
+                android:title="В виде таблицы"/>
+        </menu>
+    </item>
     <item android:title="Сортировка">
         <menu>
             <item
